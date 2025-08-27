@@ -1,0 +1,53 @@
+---
+- name : Install OpenLDAP
+  hosts: server
+  sudo: yes
+ 
+  tasks:
+   - name: Update apt cache
+     apt:
+      update_cahe:yes
+   - name: Install openLDAP
+     apt: 
+        name: 
+          - slapd
+          - openldap-client
+        state: present
+
+   - name: dc
+      community.general.ldap_entry:
+        dn: dc=test,dc=com
+        attributes:
+          objectClass: top, domain
+          dc: example
+        state: present
+
+
+   - name: OU - Organizational Unit
+      community.general.ldap_entry:
+        dn: ou=Test,dc=test,dc=com 
+        attributes:
+          objectClass: top, organizationalUnit
+          ou: Test
+        state: present
+      
+
+   - name: admin
+      community.general.ldap_entry:
+        dn: cn=Administrator , ou=Test , dc=test, dc=com
+        attributes:
+          objectClass: top, person, orfanizationalPerson, inetORGPerson
+          cn: Administrator
+          sn: Blagushinov
+          givenName: Nikita
+          mail: blagushinov@yandex.ru
+          userPassword: 'PASSwd'
+        state: present
+      
+        
+
+   - name: check
+      service:
+        name: slapd
+        state: started
+        enabled: yes
